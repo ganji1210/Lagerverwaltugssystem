@@ -70,3 +70,7 @@ table th {
 .save-item {
     background-color: green;
 }
+
+div.weather {
+    margin-left: 20px;
+}

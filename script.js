@@ -26,29 +26,14 @@ addItemForm.addEventListener('submit', async (e) => {
         alert('Gegenstand wurde hinzugefügt.');
         loadItems();
     } else {
-        alert('Fehler beim Hinzufügen des Gegenstands.');
+        if (response.status === 403) {
+            alert('Session ist abgelaufen');
+            window.location.href = 'login.html';
+            window.history.forward();
+        }
+        alert('Etwas ist schief gelaufen.');
     }
 });
-
-
-function deleteItem(itemId) {
-    fetch(`http://localhost:3000/delete-item/${itemId}`, {
-        method: 'DELETE',
-    })
-        .then(response => {
-            if (response.ok) {
-                alert('Gegenstand wurde gelöscht.');
-                loadItems();
-            } else {
-                alert('Fehler beim Löschen des Gegenstands.');
-            }
-        })
-        .catch(error => {
-            console.error('Fehler beim Löschen des Gegenstands:', error);
-        });
-}
-
-
 itemList.addEventListener('click', async (e) => {
     if (e.target.classList.contains('delete-item')) {
         const itemId = e.target.getAttribute('data-item-id');
@@ -61,6 +46,23 @@ itemList.addEventListener('click', async (e) => {
         saveItem(itemId);
     }
 });
+
+async function deleteItem(itemId) {
+    const response = await fetch(`http://localhost:3000/delete-item/${itemId}`, {
+        method: 'DELETE',
+    })
+    if (response.ok) {
+        alert('Gegenstand wurde gelöscht.');
+        loadItems();
+    } else {
+        if (response.status === 403) {
+            alert('Session ist abgelaufen');
+            window.location.href = 'login.html';
+            window.history.forward();
+        }
+        alert('Etwas ist schief gelaufen.');
+    }
+}
 
 function editItem(itemId) {
     const row = document.querySelector(`tr[data-item-id="${itemId}"]`);
@@ -79,15 +81,14 @@ function editItem(itemId) {
     row.querySelector('.save-item').style.display = 'inline';
 }
 
-
-function saveItem(itemId) {
+async function saveItem(itemId) {
     const row = document.querySelector(`tr[data-item-id="${itemId}"]`);
     const itemName = row.querySelector('.item-name').textContent;
     const itemOwner = row.querySelector('.item-owner').textContent;
     const purchaseDate = row.querySelector('.edit-purchase-date').value;
     const itemCondition = row.querySelector('.item-condition').textContent;
 
-    fetch(`http://localhost:3000/edit-item/${itemId}`, {
+    const response = await fetch(`http://localhost:3000/edit-item/${itemId}`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
@@ -98,32 +99,33 @@ function saveItem(itemId) {
             purchaseDate,
             itemCondition,
         }),
-    })
-        .then(response => {
-            if (response.ok) {
-                alert('Änderungen gespeichert.');
-                loadItems();
-            } else {
-                alert('Fehler beim Speichern der Änderungen.');
-            }
-        })
-        .catch(error => {
-            console.error('Fehler beim Speichern der Änderungen:', error);
-        });
-}
+    });
 
+    if (response.ok) {
+        alert('Änderungen gespeichert.');
+        loadItems();
+    } else {
+        if (response.status === 403) {
+            alert('Session ist abgelaufen');
+            window.location.href = 'login.html';
+            window.history.forward();
+        }
+        alert('Etwas ist schief gelaufen.');
+    }
+}
 
 async function loadItems() {
     const response = await fetch('http://localhost:3000/get-items');
-    const data = await response.json();
+    if (response.ok) {
+        const data = await response.json();
 
-    document.getElementById('itemList').innerHTML = '';
+        document.getElementById('itemList').innerHTML = '';
 
-    data.forEach(item => {
-        const row = document.createElement('tr');
-        row.setAttribute('data-item-id', item.id);
+        data.forEach(item => {
+            const row = document.createElement('tr');
+            row.setAttribute('data-item-id', item.id);
 
-        row.innerHTML = `
+            row.innerHTML = `
             <td class="item-name" contenteditable="false">${item.itemName}</td>
             <td class="item-owner" contenteditable="false">${item.itemOwner}</td>
             <td class="purchase-date" contenteditable="false">${item.purchaseDate}</td>
@@ -135,8 +137,12 @@ async function loadItems() {
             </td>
         `;
 
-        document.getElementById('itemList').appendChild(row);
-    });
+            document.getElementById('itemList').appendChild(row);
+        });
+    } else {
+        window.location.href = 'login.html';
+        window.history.forward();
+    }
 }
 
 loadItems();

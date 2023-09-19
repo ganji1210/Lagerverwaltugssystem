@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lagerverwaltungssystem</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <h1>Lagerverwaltungssystem</h1>
+
+    <div class="weather">
+        <img id="weatherIcon" />
+        <p>Ort: <span id="city"></span></p>
+        <p>Aktuelle Temperatur: <span id="temperature"></span></p>
+        <p>Wetterbedingungen: <span id="weather"></span></p>
+    </div>
+
+    <form id="addItemForm">
+        <label for="itemName">Name des Gegenstands:</label>
+        <input type="text" id="itemName" required>
+        <br>
+
+        <label for="itemOwner">Inhaber des Gegenstands:</label>
+        <input type="text" id="itemOwner" required>
+        <br>
+
+        <label for="purchaseDate">Kaufdatum:</label>
+        <input type="date" id="purchaseDate" required>
+        <br>
+
+        <label for="itemCondition">Zustand:</label>
+        <input type="text" id="itemCondition" required>
+        <br>
+
+        <button type="submit">Gegenstand hinzufügen</button>
+    </form>
+
+    <!-- Hier wird  die Liste der Gegenstände dargestellt -->
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Inhaber</th>
+                <th>Kaufdatum</th>
+                <th>Zustand</th>
+            </tr>
+        </thead>
+        <tbody id="itemList">
+
+            <!-- Hier werden die Gegenstände dynamisch eingefügt -->
+        </tbody>
+    </table>
+
+    <script src="script.js"></script>
+
+    <script>
+        const API_KEY = '105d5e791cd4bb5ab89047b876942be1';
+        const cityEl = document.getElementById('city');
+        const tempEl = document.getElementById('temperature');
+        const weatherEl = document.getElementById('weather');
+        const weatherIconEl = document.getElementById('weatherIcon');
+
+        function getWeather() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition((position) => {
+                    const lat = position.coords.latitude;
+                    const lon = position.coords.longitude;
+                    fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&lang=de&units=metric`, {
+                        method: 'GET',
+                    }).then((response) => response.json())
+                        .then((data) => {
+                            cityEl.textContent = data.name;
+                            tempEl.textContent = data.main.temp + '°C';
+                            weatherEl.textContent = data.weather[0].description;
+                            weatherIconEl.src = `http://openweathermap.org/img/wn/${data.weather[0].icon}.png`;
+                        });
+                });
+            }
+        }
+
+        getWeather();
+    </script>
+</body>
+
+</html>

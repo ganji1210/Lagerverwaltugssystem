@@ -4,14 +4,14 @@ const app = express();
 const port = 3000;
 const session = require('express-session');
 
-// Verwende CORS als Middleware
+
 app.use(cors());
 
 app.use(express.json());
 
-// Verwende express-session
+
 app.use(session({
-    secret: 'geheimnisvollesGeheimnis', // Geheimes Schlüsselwort zur Signierung von Sitzungscookies
+    secret: 'geheimnisvollesGeheimnis',
     resave: false,
     saveUninitialized: true
 }));
@@ -23,19 +23,15 @@ app.post('/login', (req, res) => {
         { username: 'Yassin', password: '1234' }
     ];
 
-    // Überprüfe, ob Benutzername und Passwort in der Liste der Benutzer vorhanden sind
     const user = users.find(user => user.username === username && user.password === password);
 
     if (user) {
-        // Die Anmeldung war erfolgreich, setze die Sitzungsvariable auf true.
         req.session.loggedIn = true;
         res.json({ message: 'Anmeldung erfolgreich' });
     } else {
-        // Die Anmeldung war nicht erfolgreich, sende einen Fehlerstatus zurück.
         res.status(401).json({ message: 'Fehler bei der Anmeldung. Überprüfe deine Anmeldeinformationen.' });
     }
 });
-
 
 app.use(express.static(__dirname));
 

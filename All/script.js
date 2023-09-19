@@ -30,7 +30,7 @@ addItemForm.addEventListener('submit', async (e) => {
     }
 });
 
-// Funktion zum Löschen eines Gegenstands
+
 function deleteItem(itemId) {
     fetch(`http://localhost:3000/delete-item/${itemId}`, {
         method: 'DELETE',
@@ -48,7 +48,7 @@ function deleteItem(itemId) {
         });
 }
 
-// Event Delegation, um Klicks auf die "Löschen"-Schaltfläche zu verarbeiten
+
 itemList.addEventListener('click', async (e) => {
     if (e.target.classList.contains('delete-item')) {
         const itemId = e.target.getAttribute('data-item-id');
@@ -62,7 +62,6 @@ itemList.addEventListener('click', async (e) => {
     }
 });
 
-// Funktion zum Bearbeiten eines Gegenstands
 function editItem(itemId) {
     const row = document.querySelector(`tr[data-item-id="${itemId}"]`);
     const itemNameElement = row.querySelector('.item-name');
@@ -80,7 +79,7 @@ function editItem(itemId) {
     row.querySelector('.save-item').style.display = 'inline';
 }
 
-// Funktion zum Speichern der Änderungen an einem Gegenstand
+
 function saveItem(itemId) {
     const row = document.querySelector(`tr[data-item-id="${itemId}"]`);
     const itemName = row.querySelector('.item-name').textContent;
@@ -113,7 +112,7 @@ function saveItem(itemId) {
         });
 }
 
-// Funktion zum Laden der Gegenstände
+
 async function loadItems() {
     const response = await fetch('http://localhost:3000/get-items');
     const data = await response.json();
